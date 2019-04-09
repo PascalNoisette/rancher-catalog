@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  mydb :
+    image: mysql:5.7
+    environment:
+    - MYSQL_DATABASE=magento2
+    - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    - MYSQL_USER=magento2
+    - MYSQL_PASSWORD=!magento2
+    volumes:
+    - data:/var/lib/mysql
+
+  web:
+    image: meanbee/magento2-nginx:1.9
+    depends_on:
+    - fpm
+    volumes:
+    - source:/var/www/magento
+
+  fpm:
+    image: meanbee/magento2-php:7.2-fpm
+    depends_on:
+    - mydb
+    volumes:
+    - source:/var/www/magento
+
+  cli:
+    image: meanbee/magento2-php:7.2-cli
+    command: ["/usr/local/bin/magento-installer"]
+    environment:
+    - M2SETUP_INSTALL_DB=false
+    - M2SETUP_VERSION=2.3.1
+    depends_on:
+    - mydb
+    volumes:
+    - source:/var/www/magento
+    - ~/.composer/:/root/.composer/
+
+  cron:
+    image: meanbee/magento2-php:7.2-cli
+    depends_on:
+    - mydb
+    command: run-cron
+    volumes:
+    - source:/var/www/magento
+
+volumes:
+  source:
+  data:
