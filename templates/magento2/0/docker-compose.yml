@@ -50,6 +50,6 @@ magento-data:
   volumes:
     - /var/lib/mysql
     - /var/www/magento
-    - ~/.composer/:/root/.composer/
+    - /root/.composer/:/root/.composer/
   net: none
   command: /bin/true
