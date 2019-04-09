@@ -26,6 +26,8 @@ fpm:
 
 cli:
   image: meanbee/magento2-php:7.2-cli
+  labels:
+    io.rancher.container.start_once: 'true'
   command: ["/usr/local/bin/magento-installer"]
   environment:
   - M2SETUP_INSTALL_DB=false
