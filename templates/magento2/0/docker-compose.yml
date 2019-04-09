@@ -12,6 +12,8 @@ web:
   image: meanbee/magento2-nginx:1.9
   links:
   - fpm
+  labels:
+    io.rancher.sidekicks: magento-data, mydb, fpm, cli, cron
   volumes_from:
     - magento-data
 
