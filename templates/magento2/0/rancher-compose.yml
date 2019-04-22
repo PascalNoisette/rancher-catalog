@@ -63,8 +63,8 @@ catalog:
       default: "magento0"
       required: true
       type: "string"
-    - variable: "M2SETUP_BASE_URL"
-      label: "M2SETUP_BASE_URL"
+    - variable: "DOMAIN"
+      label: "DOMAIN"
       description: ""
       default: "magento.local"
       required: true
