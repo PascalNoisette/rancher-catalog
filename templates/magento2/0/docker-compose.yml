@@ -1,41 +1,66 @@
 mydb :
   image: mysql:5.7
+  volumes:
+    - /var/lib/mysql
   environment:
-  - MYSQL_DATABASE=magento2
-  - MYSQL_RANDOM_ROOT_PASSWORD=yes
-  - MYSQL_USER=magento2
-  - MYSQL_PASSWORD=!magento2
-  volumes_from:
-    - magento-data
+    - MAGENTO_RUN_MODE=production
+    - MYSQL_DATABASE=${MYSQL_DATABASE}
+    - MYSQL_USER=${MYSQL_USER}
+    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    - MYSQL_RANDOM_ROOT_PASSWORD=yes
 
 web:
   image: meanbee/magento2-nginx:1.9
   links:
   - fpm
   labels:
-    io.rancher.sidekicks: magento-data, mydb, fpm, cli, cron
+    io.rancher.sidekicks: mydb, fpm, cli, cron, elasticsearch, redis
   volumes_from:
-    - magento-data
+    - fpm
+  environment:
+    - MAGENTO_RUN_MODE=production
 
 fpm:
   image: meanbee/magento2-php:7.2-fpm
   links:
   - mydb
-  volumes_from:
-    - magento-data
+  - redis
+  - elasticsearch
+  volumes:
+    - /var/www/magento
+  environment:
+    - MAGENTO_RUN_MODE=production
 
 cli:
   image: meanbee/magento2-php:7.2-cli
   labels:
     io.rancher.container.start_once: 'true'
   command: ["/usr/local/bin/magento-installer"]
-  environment:
-  - M2SETUP_INSTALL_DB=false
-  - M2SETUP_VERSION=2.3.1
   links:
   - mydb
+  - redis
+  - elasticsearch
   volumes_from:
-    - magento-data
+    - fpm
+  environment:
+    - MAGENTO_RUN_MODE=production
+    - M2SETUP_BACKEND_FRONTNAME=admin
+    - M2SETUP_ADMIN_FIRSTNAME=Admin
+    - M2SETUP_ADMIN_LASTNAME=Admin
+    - M2SETUP_ADMIN_USER=admin
+    - M2SETUP_DB_HOST=mydb
+    - M2SETUP_DB_NAME=${MYSQL_DATABASE}
+    - M2SETUP_DB_USER=${MYSQL_USER}
+    - M2SETUP_DB_PASSWORD={$MYSQL_PASSWORD}
+    - COMPOSER_GITHUB_TOKEN=${COMPOSER_GITHUB_TOKEN}
+    - COMPOSER_MAGENTO_USERNAME=${COMPOSER_MAGENTO_USERNAME}
+    - COMPOSER_MAGENTO_PASSWORD=${COMPOSER_MAGENTO_PASSWORD}
+    - M2SETUP_VERSION=${M2SETUP_VERSION}
+    - M2SETUP_EDITION=${M2SETUP_EDITION}
+    - M2SETUP_ADMIN_EMAIL=${M2SETUP_ADMIN_EMAIL}
+    - M2SETUP_ADMIN_PASSWORD=${M2SETUP_ADMIN_PASSWORD}
+    - M2SETUP_BASE_URL=${M2SETUP_BASE_URL}
+    - M2SETUP_INSTALL_DB=${M2SETUP_INSTALL_DB}
 
 cron:
   image: meanbee/magento2-php:7.2-cli
@@ -43,15 +68,23 @@ cron:
   - mydb
   command: run-cron
   volumes_from:
-    - magento-data
+    - fpm
 
-magento-data:
-  labels:
-    io.rancher.container.start_once: 'true'
-  image: alpine
-  volumes:
-    - /var/lib/mysql
-    - /var/www/magento
-    - /root/.composer/:/root/.composer/
-  net: none
-  command: /bin/true
+elasticsearch:
+    build: https://raw.githubusercontent.com/EmakinaFR/docker-magento2/master/elasticsearch/Dockerfile
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - xpack.ml.enabled=false
+      - xpack.graph.enabled=false
+      - xpack.watcher.enabled=false
+
+
+redis:
+    image: redis:3
+
