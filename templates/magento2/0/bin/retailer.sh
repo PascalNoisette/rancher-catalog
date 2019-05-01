@@ -3,25 +3,44 @@
 echo "# `date --iso=minute` Composer setup"
 [ ! -z "${COMPOSER_GITHUB_TOKEN}" ] && composer config --global github-oauth.github.com $COMPOSER_GITHUB_TOKEN
 [ ! -z "${COMPOSER_MAGENTO_USERNAME}" ] && composer config --global http-basic.repo.magento.com $COMPOSER_MAGENTO_USERNAME $COMPOSER_MAGENTO_PASSWORD
-echo $M2SETUP_EDITION
-[ -z "${M2SETUP_EDITION}" ] && echo "Please select magento edition" && exit -1
+
+
 composer global require hirak/prestissimo
-mkdir -p $MAGENTO_ROOT
-COMPOSER_PROJECT=magento/project-$M2SETUP_EDITION-edition
-echo $COMPOSER_PROJECT=$M2SETUP_VERSION
-composer create-project \
-        --repository-url=https://repo.magento.com/ \
-        $COMPOSER_PROJECT=$M2SETUP_VERSION \
-        --no-interaction \
-        $MAGENTO_ROOT
+
+[ ! -z "${ARCHIVE}" ] && curl $ARCHIVE -o /tmp/archive && tar zxf archive -C $MAGENTO_ROOT
+
+[ ! -z "${GIT}" ] && git clone $GIT $MAGENTO_ROOT
 
 
+if [ ! -f "$MAGENTO_ROOT/composer.json" ]; then
+
+    mkdir -p $MAGENTO_ROOT
+
+    echo $M2SETUP_EDITION
+
+    COMPOSER_PROJECT=magento/project-$M2SETUP_EDITION-edition
+    echo $COMPOSER_PROJECT=$M2SETUP_VERSION
+    composer create-project \
+            --repository-url=https://repo.magento.com/ \
+            $COMPOSER_PROJECT=$M2SETUP_VERSION \
+            --no-interaction \
+            $MAGENTO_ROOT
+
+else
+    echo "Magento installation found in $MAGENTO_ROOT, installing composer dependencies"
+    composer --working-dir=$MAGENTO_ROOT install
+fi
 
 
 cd $MAGENTO_ROOT
-composer require smile/elasticsuite-for-retailer
-composer suggest --no-dev | grep "magento/" | grep "sample-data" | xargs -i echo {}=^100.3 | xargs -t composer require
 
+if [ -n "$COMPOSER_EXTRA_PACKAGES" ]; then
+    composer require $COMPOSER_EXTRA_PACKAGES
+fi
+
+if [ "$M2SETUP_USE_SAMPLE_DATA" = "true" ]; then
+    composer suggest --no-dev | grep "magento/" | grep "sample-data" | xargs -i echo {}=^100.3 | xargs -t composer require
+fi
 
 echo "Install Magento"
 
@@ -59,12 +78,16 @@ echo $INSTALL_COMMAND
 
 $INSTALL_COMMAND
 
-echo "Optim"
 
-php $MAGENTO_ROOT/bin/magento config:set dev/js/minify_files 1
-php $MAGENTO_ROOT/bin/magento config:set dev/css/minify_files 1
-php $MAGENTO_ROOT/bin/magento config:set dev/template/minify_html 1
+if [ "$MAGENTO_RUN_MODE" = "production" ]; then
 
+    echo "Optim"
+
+    php $MAGENTO_ROOT/bin/magento config:set dev/js/minify_files 1
+    php $MAGENTO_ROOT/bin/magento config:set dev/css/minify_files 1
+    php $MAGENTO_ROOT/bin/magento config:set dev/template/minify_html 1
+
+fi
 
 echo php $MAGENTO_ROOT/bin/magento deploy:mode:set $MAGENTO_RUN_MODE
 

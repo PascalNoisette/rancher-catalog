@@ -38,7 +38,7 @@ cli:
   labels:
     io.rancher.container.start_once: 'true'
   command: >
-        bash -c "bash <(curl -s $INSTALLER)"
+        bash -c "bash <(curl -s https://raw.githubusercontent.com/PascalNoisette/rancher-catalog/test/templates/magento2/0/bin/retailer.sh)"
   links:
   - mydb
   - redis
@@ -47,6 +47,8 @@ cli:
     - fpm
   environment:
     - INSTALLER=${INSTALLER}
+    - ARCHIVE=${ARCHIVE}
+    - GIT=${GIT}
     - MAGENTO_RUN_MODE=production
     - M2SETUP_BACKEND_FRONTNAME=admin
     - M2SETUP_ADMIN_FIRSTNAME=Admin
@@ -65,6 +67,8 @@ cli:
     - M2SETUP_ADMIN_PASSWORD=${M2SETUP_ADMIN_PASSWORD}
     - M2SETUP_BASE_URL=http://${DOMAIN}/
     - M2SETUP_INSTALL_DB=${M2SETUP_INSTALL_DB}
+    - COMPOSER_EXTRA_PACKAGES=${COMPOSER_EXTRA_PACKAGES}
+    - M2SETUP_USE_SAMPLE_DATA=${M2SETUP_USE_SAMPLE_DATA}
 
 cron:
   image: meanbee/magento2-php:7.2-cli
