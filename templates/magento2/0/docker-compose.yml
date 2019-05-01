@@ -37,7 +37,10 @@ cli:
   image: meanbee/magento2-php:7.2-cli
   labels:
     io.rancher.container.start_once: 'true'
-  command: ["/usr/local/bin/magento-installer"]
+  command: >
+        bash -c "  composer global require hirak/prestissimo                        &&
+                   /usr/local/bin/magento-installer                                 &&
+                   su www-data -s /var/www/magento/bin/magento deploy:mode:set production   "
   links:
   - mydb
   - redis
