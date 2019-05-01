@@ -3,6 +3,15 @@ catalog:
   name: "Magento2" # Name of the versioned template of the Catalog Entry
   version: 0 # Version of the versioned template of the Catalog Entry
   questions:
+    - variable: "INSTALLER"
+      label: "INSTALLER"
+      description: ""
+      required: true
+      default: "https://raw.githubusercontent.com/PascalNoisette/rancher-catalog/master/templates/magento2/0/bin/luma.sh"
+      type: "enum"
+      options:
+        - https://raw.githubusercontent.com/PascalNoisette/rancher-catalog/master/templates/magento2/0/bin/retailer.sh
+        - https://raw.githubusercontent.com/PascalNoisette/rancher-catalog/master/templates/magento2/0/bin/luma.sh
     - variable: "COMPOSER_GITHUB_TOKEN"
       label: "COMPOSER_GITHUB_TOKEN"
       description: ""
@@ -17,6 +26,11 @@ catalog:
       label: "COMPOSER_MAGENTO_PASSWORD"
       description: ""
       required: true
+      type: "string"
+    - variable: "ARCHIVE"
+      label: "ARCHIVE"
+      description: ""
+      required: false
       type: "string"
     - variable: "M2SETUP_VERSION"
       label: "M2SETUP_VERSION"

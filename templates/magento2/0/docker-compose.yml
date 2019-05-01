@@ -38,9 +38,7 @@ cli:
   labels:
     io.rancher.container.start_once: 'true'
   command: >
-        bash -c "  composer global require hirak/prestissimo                        &&
-                   /usr/local/bin/magento-installer                                 &&
-                   su www-data -s /var/www/magento/bin/magento deploy:mode:set production   "
+        bash -c "bash <(curl -s $INSTALLER)"
   links:
   - mydb
   - redis
@@ -48,6 +46,7 @@ cli:
   volumes_from:
     - fpm
   environment:
+    - INSTALLER=${INSTALLER}
     - MAGENTO_RUN_MODE=production
     - M2SETUP_BACKEND_FRONTNAME=admin
     - M2SETUP_ADMIN_FIRSTNAME=Admin
