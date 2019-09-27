@@ -1,7 +1,10 @@
-name: docker-compose
-description: A generated Helm Chart for docker-compose from Skippbox Kompose
+name: elasticsearch
+description: Elasticsearc, kibana and cerebros
 version: 0.0.1
 keywords:
   - docker-compose
+  - elasticsearch
+  - cerebros
+  - kibana
 sources:
 home:
