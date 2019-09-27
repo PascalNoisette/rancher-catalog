@@ -1,0 +1,78 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (06a2e56)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: kibana
+  name: kibana
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: kibana
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_CONTAINER
+          valueFrom:
+            configMapKeyRef:
+              key: ELASTIC_CONTAINER
+              name: kibana-env
+        - name: ES_JAVA_OPTS
+          valueFrom:
+            configMapKeyRef:
+              key: ES_JAVA_OPTS
+              name: kibana-env
+        - name: bootstrap.memory_lock
+          valueFrom:
+            configMapKeyRef:
+              key: bootstrap.memory_lock
+              name: kibana-env
+        - name: cluster.name
+          valueFrom:
+            configMapKeyRef:
+              key: cluster.name
+              name: kibana-env
+        - name: discovery.type
+          valueFrom:
+            configMapKeyRef:
+              key: discovery.type
+              name: kibana-env
+        - name: xpack.graph.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.graph.enabled
+              name: kibana-env
+        - name: xpack.ml.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.ml.enabled
+              name: kibana-env
+        - name: xpack.monitoring.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.monitoring.enabled
+              name: kibana-env
+        - name: xpack.security.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.security.enabled
+              name: kibana-env
+        - name: xpack.watcher.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.watcher.enabled
+              name: kibana-env
+        image: docker.elastic.co/kibana/kibana-oss:6.5.4
+        name: kibana
+        ports:
+        - containerPort: 5601
+        resources: {}
+      restartPolicy: Always
+status: {}

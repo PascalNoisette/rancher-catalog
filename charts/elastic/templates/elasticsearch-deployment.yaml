@@ -1,0 +1,86 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.18.0 (06a2e56)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: elasticsearch
+  name: elasticsearch
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: elasticsearch
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_CONTAINER
+          valueFrom:
+            configMapKeyRef:
+              key: ELASTIC_CONTAINER
+              name: elasticsearch-env
+        - name: ES_JAVA_OPTS
+          valueFrom:
+            configMapKeyRef:
+              key: ES_JAVA_OPTS
+              name: elasticsearch-env
+        - name: bootstrap.memory_lock
+          valueFrom:
+            configMapKeyRef:
+              key: bootstrap.memory_lock
+              name: elasticsearch-env
+        - name: cluster.name
+          valueFrom:
+            configMapKeyRef:
+              key: cluster.name
+              name: elasticsearch-env
+        - name: discovery.type
+          valueFrom:
+            configMapKeyRef:
+              key: discovery.type
+              name: elasticsearch-env
+        - name: xpack.graph.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.graph.enabled
+              name: elasticsearch-env
+        - name: xpack.ml.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.ml.enabled
+              name: elasticsearch-env
+        - name: xpack.monitoring.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.monitoring.enabled
+              name: elasticsearch-env
+        - name: xpack.security.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.security.enabled
+              name: elasticsearch-env
+        - name: xpack.watcher.enabled
+          valueFrom:
+            configMapKeyRef:
+              key: xpack.watcher.enabled
+              name: elasticsearch-env
+        image: elasticsearch
+        name: elasticsearch
+        ports:
+        - containerPort: 9200
+        resources: {}
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: esdata
+      restartPolicy: Always
+      volumes:
+      - name: esdata
+        persistentVolumeClaim:
+          claimName: esdata
+status: {}
