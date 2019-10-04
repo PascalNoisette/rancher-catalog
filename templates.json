@@ -1,0 +1,14 @@
+[
+  {
+    "type": "stack",
+    "title": "Elastic ELK",
+    "name": "elastic",
+    "description": "Elastic Kibana and cerebros",
+    "categories": ["database"],
+    "platform": "linux",
+    "repository": {
+      "url": "https://github.com/PascalNoisette/rancher-catalog",
+      "stackfile": "stacks/elastic/docker-compose.yml"
+    }
+  }
+]
