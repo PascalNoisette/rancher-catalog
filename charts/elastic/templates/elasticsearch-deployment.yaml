@@ -75,12 +75,5 @@ spec:
         ports:
         - containerPort: 9200
         resources: {}
-        volumeMounts:
-        - mountPath: /usr/share/elasticsearch/data
-          name: esdata
       restartPolicy: Always
-      volumes:
-      - name: esdata
-        persistentVolumeClaim:
-          claimName: esdata
 status: {}

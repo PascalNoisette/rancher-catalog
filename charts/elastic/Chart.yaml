@@ -1,6 +1,6 @@
 name: elasticsearch
 description: Elasticsearc, kibana and cerebros
-version: 0.0.1
+version: 0.0.2
 keywords:
   - docker-compose
   - elasticsearch
