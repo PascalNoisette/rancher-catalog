@@ -70,7 +70,7 @@ spec:
             configMapKeyRef:
               key: xpack.watcher.enabled
               name: elasticsearch-env
-        image: https://raw.githubusercontent.com/EmakinaFR/docker-magento2/master/elasticsearch/Dockerfile
+        image: netpascal0123/elastic
         name: elasticsearch
         ports:
         - containerPort: 9200
