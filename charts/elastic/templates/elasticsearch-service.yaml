@@ -13,7 +13,7 @@ spec:
   ports:
   - name: "9200"
     port: 9200
-    targetPort: 9200
+    nodePort: 9200
   selector:
     io.kompose.service: elasticsearch
 status:
